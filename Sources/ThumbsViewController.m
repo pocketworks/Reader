@@ -55,10 +55,6 @@
 
 #pragma mark Constants
 
-#define STATUS_HEIGHT 20.0f
-
-#define TOOLBAR_HEIGHT 44.0f
-
 #define PAGE_THUMB_SMALL 160
 #define PAGE_THUMB_LARGE 256
 
@@ -143,37 +139,10 @@
 	self.view.backgroundColor = [UIColor colorWithRed:189/255.0f green:195/255.0f blue:199/255.0f alpha:1.0]; // Neutral gray
 
     [self setUpNavigationBarItems];
-    
-	CGRect scrollViewRect = self.view.bounds; UIView *fakeStatusBar = nil;
-
-	if ([self respondsToSelector:@selector(edgesForExtendedLayout)]) // iOS 7+
-	{
-		if ([self prefersStatusBarHidden] == NO) // Visible status bar
-		{
-			CGRect statusBarRect = self.view.bounds; // Status bar frame
-			statusBarRect.size.height = STATUS_HEIGHT; // Default status height
-			fakeStatusBar = [[UIView alloc] initWithFrame:statusBarRect]; // UIView
-			fakeStatusBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-			fakeStatusBar.backgroundColor = [UIColor blackColor];
-			fakeStatusBar.contentMode = UIViewContentModeRedraw;
-			fakeStatusBar.userInteractionEnabled = NO;
-
-			scrollViewRect.origin.y += STATUS_HEIGHT; scrollViewRect.size.height -= STATUS_HEIGHT;
-		}
-	}
 
 	UIEdgeInsets scrollViewInsets = UIEdgeInsetsZero; // Scroll view toolbar insets
 
-	if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) // iPad
-	{
-		scrollViewRect.origin.y += TOOLBAR_HEIGHT; scrollViewRect.size.height -= TOOLBAR_HEIGHT;
-	}
-	else // Set UIScrollView insets for non-UIUserInterfaceIdiomPad case
-	{
-		scrollViewInsets.top = TOOLBAR_HEIGHT;
-	}
-
-	theThumbsView = [[ReaderThumbsView alloc] initWithFrame:scrollViewRect]; // ReaderThumbsView
+	theThumbsView = [[ReaderThumbsView alloc] initWithFrame:self.view.bounds]; // ReaderThumbsView
 	theThumbsView.contentInset = scrollViewInsets; theThumbsView.scrollIndicatorInsets = scrollViewInsets;
 	theThumbsView.delegate = self; // ReaderThumbsViewDelegate
 	[self.view addSubview:theThumbsView];
