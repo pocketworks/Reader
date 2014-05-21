@@ -145,7 +145,10 @@
 		self.contentMode = UIViewContentModeRedraw;
 		self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
         
-        [self.layer setShadowOffset:CGSizeMake(0.0f, -2.0f)];
+        [self.layer setShadowColor:[UIColor blackColor].CGColor];
+        [self.layer setShadowOffset:CGSizeMake(0.0f, -0.4f)];
+        [self.layer setShadowOpacity:0.3f];
+        [self.layer setShadowRadius:0.0f];
         
 		CGFloat numberY = (0.0f - (PAGE_NUMBER_HEIGHT + PAGE_NUMBER_SPACE));
 		CGFloat numberX = ((self.bounds.size.width - PAGE_NUMBER_WIDTH) / 2.0f);
@@ -196,6 +199,8 @@
 		[self updatePageNumberText:[document.pageNumber integerValue]];
 
 		miniThumbViews = [NSMutableDictionary new]; // Small thumbs
+        
+        [self setBackgroundColor:[UIColor whiteColor]];
 	}
 
 	return self;
@@ -559,44 +564,6 @@
 		imageView.layer.borderColor = [UIColor colorWithWhite:0.4f alpha:0.6f].CGColor;
 
 		imageView.layer.borderWidth = 1.0f; // Give the thumb image view a border
-	}
-
-	return self;
-}
-
-@end
-
-#pragma mark -
-
-//
-//	ReaderPagebarShadow class implementation
-//
-
-@implementation ReaderPagebarShadow
-
-#pragma mark ReaderPagebarShadow class methods
-
-+ (Class)layerClass
-{
-	return [CAGradientLayer class];
-}
-
-#pragma mark ReaderPagebarShadow instance methods
-
-- (id)initWithFrame:(CGRect)frame
-{
-	if ((self = [super initWithFrame:frame]))
-	{
-		self.autoresizesSubviews = NO;
-		self.userInteractionEnabled = NO;
-		self.contentMode = UIViewContentModeRedraw;
-		self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-		self.backgroundColor = [UIColor clearColor];
-
-		CAGradientLayer *layer = (CAGradientLayer *)self.layer;
-		UIColor *blackColor = [UIColor colorWithWhite:0.42f alpha:1.0f];
-		UIColor *clearColor = [UIColor colorWithWhite:0.42f alpha:0.0f];
-		layer.colors = [NSArray arrayWithObjects:(id)clearColor.CGColor, (id)blackColor.CGColor, nil];
 	}
 
 	return self;
