@@ -34,7 +34,7 @@
 
 #pragma mark Constants
 
-#define DEMO_VIEW_CONTROLLER_PUSH FALSE
+#define DEMO_VIEW_CONTROLLER_PUSH TRUE
 
 #pragma mark UIViewController methods
 
@@ -60,9 +60,11 @@
 - (void)viewDidLoad
 {
 	[super viewDidLoad];
-
+    
 	self.view.backgroundColor = [UIColor clearColor]; // Transparent
-
+    
+    [[[self navigationController] navigationBar] setBackgroundColor:[UIColor colorWithRed:52/255.0f green:152/255.0f blue:219/255.0f alpha:1.0]];
+    
 	NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
 
 	NSString *name = [infoDictionary objectForKey:@"CFBundleName"];
@@ -89,40 +91,16 @@
 	[self.view addSubview:tapLabel]; 
 
 	UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-	//singleTap.numberOfTouchesRequired = 1; singleTap.numberOfTapsRequired = 1; //singleTap.delegate = self;
-	[self.view addGestureRecognizer:singleTap]; 
+
+	[self.view addGestureRecognizer:singleTap];
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-	[super viewWillAppear:animated];
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    [super observeValueForKeyPath:keyPath
+                         ofObject:object
+                           change:change
+                          context:context];
 
-#if (DEMO_VIEW_CONTROLLER_PUSH == TRUE)
-
-	[self.navigationController setNavigationBarHidden:NO animated:animated];
-
-#endif // DEMO_VIEW_CONTROLLER_PUSH
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-	[super viewDidAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-	[super viewWillDisappear:animated];
-
-#if (DEMO_VIEW_CONTROLLER_PUSH == TRUE)
-
-	[self.navigationController setNavigationBarHidden:YES animated:animated];
-
-#endif // DEMO_VIEW_CONTROLLER_PUSH
-}
-
-- (void)viewDidDisappear:(BOOL)animated
-{
-	[super viewDidDisappear:animated];
 }
 
 - (void)viewDidUnload
