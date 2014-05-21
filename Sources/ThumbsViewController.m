@@ -410,7 +410,8 @@
 #if (READER_SHOW_SHADOWS == TRUE) // Option
 
 		backView.layer.shadowOffset = CGSizeMake(0.0f, 1.0f);
-		backView.layer.shadowRadius = 3.0f; backView.layer.shadowOpacity = 1.0f;
+		backView.layer.shadowRadius = 1.0f;
+        backView.layer.shadowOpacity = 0.3f;
 		backView.layer.shadowPath = [UIBezierPath bezierPathWithRect:backView.bounds].CGPath;
 
 #endif // end of READER_SHOW_SHADOWS Option
