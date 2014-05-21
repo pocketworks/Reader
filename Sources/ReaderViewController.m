@@ -774,7 +774,6 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 }
 
 -(void)pushThumbsBarButtonItem:(id)sender {
-	if (printInteraction != nil) [printInteraction dismissAnimated:NO]; // Dismiss
     
 	ThumbsViewController *thumbsViewController = [[ThumbsViewController alloc] initWithReaderDocument:document];
     
@@ -785,7 +784,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:thumbsViewController];
     
-	[self presentViewController:navigationController animated:NO completion:NULL];
+	[self presentViewController:navigationController animated:YES completion:NULL];
 }
 
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -805,7 +804,6 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 }
 
 -(void)actionSheetBookmarkDocument {
-    if (printInteraction != nil) [printInteraction dismissAnimated:YES];
     
     [document.bookmarks addIndex:[document.pageNumber integerValue]];
 }
@@ -816,8 +814,6 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 
 -(void)actionSheetEmailDocument {
 	if ([MFMailComposeViewController canSendMail] == NO) return;
-    
-	if (printInteraction != nil) [printInteraction dismissAnimated:YES];
     
 	unsigned long long fileSize = [document.fileSize unsignedLongLongValue];
     
