@@ -34,7 +34,8 @@
 
 #pragma mark Constants
 
-#define DEMO_VIEW_CONTROLLER_PUSH TRUE
+#define DEMO_VIEW_CONTROLLER_PUSH FALSE
+
 
 #pragma mark UIViewController methods
 
@@ -168,10 +169,11 @@
 
 #else // present in a modal view controller
 
-		readerViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
 		readerViewController.modalPresentationStyle = UIModalPresentationFullScreen;
-
-		[self presentViewController:readerViewController animated:YES completion:NULL];
+        
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:readerViewController];
+        
+		[self presentViewController:navigationController animated:YES completion:NULL];
 
 #endif // DEMO_VIEW_CONTROLLER_PUSH
 	}

@@ -51,6 +51,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 
 	UIScrollView *theScrollView;
 
+    UIBarButtonItem *doneBarButtonItem;
     UIBarButtonItem *thumbsBarButton;
     UIBarButtonItem *moreBarButtonItem;
     
@@ -365,6 +366,13 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 }
 
 -(void)setUpBarButtonItems {
+    if ([self isPresentedModally]) {
+        doneBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                          target:self
+                                                                          action:@selector(pushDoneBarButtonItem:)];
+        [self.navigationItem setLeftBarButtonItem:doneBarButtonItem];
+        
+    }
     
     thumbsBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Reader-Thumbs"]
                                                                            style:UIBarButtonItemStylePlain
@@ -730,6 +738,12 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 	}
 }
 
+-(BOOL)isPresentedModally {
+    return self.presentingViewController.presentedViewController == self
+    || self.navigationController.presentingViewController.presentedViewController == self.navigationController
+    || [self.tabBarController.presentingViewController isKindOfClass:[UITabBarController class]];
+}
+
 #pragma mark ReaderContentViewDelegate methods
 
 - (void)contentView:(ReaderContentView *)contentView touchesBegan:(NSSet *)touches
@@ -755,6 +769,10 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 }
 
 #pragma mark Toolbar button actions
+
+-(void)pushDoneBarButtonItem:(id)sender {
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
 
 -(void)pushActionBarButtonItem:(id)sender {
     NSInteger page = [document.pageNumber integerValue];
