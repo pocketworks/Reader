@@ -777,7 +777,9 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 	thumbsViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
 	thumbsViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     
-	[self presentViewController:thumbsViewController animated:NO completion:NULL];
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:thumbsViewController];
+    
+	[self presentViewController:navigationController animated:NO completion:NULL];
 }
 
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {

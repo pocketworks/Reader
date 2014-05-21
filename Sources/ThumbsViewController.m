@@ -38,9 +38,10 @@
 @implementation ThumbsViewController
 {
 	ReaderDocument *document;
-
-	ThumbsMainToolbar *mainToolbar;
-
+    
+    UIBarButtonItem *doneBarButtonItem;
+    UISegmentedControl *toggleBookmarksSegmentedControl;
+    
 	ReaderThumbsView *theThumbsView;
 
 	NSMutableArray *bookmarked;
@@ -86,14 +87,63 @@
 	return thumbs;
 }
 
+-(void)pushDoneBarButtonItem:(id)sender {
+    if ([delegate respondsToSelector:@selector(dismissThumbsViewController:)]) {
+        [delegate dismissThumbsViewController:self];
+    }
+}
+
+-(void)pushToggleBookmarkSegmentedControl:(id)sender {
+    switch (toggleBookmarksSegmentedControl.selectedSegmentIndex)
+	{
+		case 0: // Show all page thumbs
+		{
+			showBookmarked = NO; // Show all thumbs
+            
+			markedOffset = [theThumbsView insetContentOffset];
+            
+			[theThumbsView reloadThumbsContentOffset:thumbsOffset];
+            
+			break; // We're done
+		}
+            
+		case 1: // Show bookmarked thumbs
+		{
+			showBookmarked = YES; // Only bookmarked
+            
+			thumbsOffset = [theThumbsView insetContentOffset];
+            
+			if (updateBookmarked == YES) // Update bookmarked list
+			{
+				[bookmarked removeAllObjects]; // Empty the list first
+                
+				[document.bookmarks enumerateIndexesUsingBlock: // Enumerate
+                 ^(NSUInteger page, BOOL *stop)
+                 {
+                     [bookmarked addObject:[NSNumber numberWithInteger:page]];
+                 }
+                 ];
+                
+				markedOffset = CGPointZero; updateBookmarked = NO; // Reset
+			}
+            
+			[theThumbsView reloadThumbsContentOffset:markedOffset];
+            
+			break; // We're done
+		}
+	}
+}
+
 - (void)viewDidLoad
 {
 	[super viewDidLoad];
 
 	assert(delegate != nil); assert(document != nil);
 
-	self.view.backgroundColor = [UIColor grayColor]; // Neutral gray
+	self.view.backgroundColor = [UIColor colorWithRed:189/255.0f green:195/255.0f blue:199/255.0f alpha:1.0]; // Neutral gray
 
+    [self setUpNavigationBarItems];
+    
 	CGRect scrollViewRect = self.view.bounds; UIView *fakeStatusBar = nil;
 
 	if ([self respondsToSelector:@selector(edgesForExtendedLayout)]) // iOS 7+
@@ -112,16 +162,6 @@
 		}
 	}
 
-	NSString *toolbarTitle = [document.fileName stringByDeletingPathExtension];
-
-	CGRect toolbarRect = scrollViewRect; // Toolbar frame
-	toolbarRect.size.height = TOOLBAR_HEIGHT; // Default toolbar height
-	mainToolbar = [[ThumbsMainToolbar alloc] initWithFrame:toolbarRect title:toolbarTitle]; // ThumbsMainToolbar
-	mainToolbar.delegate = self; // ThumbsMainToolbarDelegate
-	[self.view addSubview:mainToolbar];
-
-	if (fakeStatusBar != nil) [self.view addSubview:fakeStatusBar]; // Add status bar background view
-
 	UIEdgeInsets scrollViewInsets = UIEdgeInsetsZero; // Scroll view toolbar insets
 
 	if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) // iPad
@@ -136,11 +176,30 @@
 	theThumbsView = [[ReaderThumbsView alloc] initWithFrame:scrollViewRect]; // ReaderThumbsView
 	theThumbsView.contentInset = scrollViewInsets; theThumbsView.scrollIndicatorInsets = scrollViewInsets;
 	theThumbsView.delegate = self; // ReaderThumbsViewDelegate
-	[self.view insertSubview:theThumbsView belowSubview:mainToolbar];
+	[self.view addSubview:theThumbsView];
 
 	BOOL large = ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad);
 	CGFloat thumbSize = (large ? PAGE_THUMB_LARGE : PAGE_THUMB_SMALL); // Thumb dimensions
 	[theThumbsView setThumbSize:CGSizeMake(thumbSize, thumbSize)]; // Set the thumb size
+}
+
+-(void)setUpNavigationBarItems {
+    doneBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                      target:self
+                                                                      action:@selector(pushDoneBarButtonItem:)];
+    [self.navigationItem setLeftBarButtonItem:doneBarButtonItem];
+
+    UIImage *thumbsImage = [UIImage imageNamed:@"Reader-Thumbs"];
+    UIImage *bookmarkImage = [UIImage imageNamed:@"Reader-Mark-Y"];
+    NSArray *buttonItems = [NSArray arrayWithObjects:thumbsImage, bookmarkImage, nil];
+
+    toggleBookmarksSegmentedControl = [[UISegmentedControl alloc] initWithItems:buttonItems];
+    [toggleBookmarksSegmentedControl addTarget:self action:@selector(pushToggleBookmarkSegmentedControl:) forControlEvents:UIControlEventValueChanged];
+    [toggleBookmarksSegmentedControl setWidth:60.0f forSegmentAtIndex:0];
+    [toggleBookmarksSegmentedControl setWidth:60.0f forSegmentAtIndex:1];
+    [toggleBookmarksSegmentedControl setSelectedSegmentIndex:0];
+    
+    [self.navigationItem setTitleView:toggleBookmarksSegmentedControl];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -170,8 +229,6 @@
 #ifdef DEBUG
 	NSLog(@"%s", __FUNCTION__);
 #endif
-
-	mainToolbar = nil; theThumbsView = nil;
 
 	[super viewDidUnload];
 }
