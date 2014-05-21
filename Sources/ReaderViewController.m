@@ -58,8 +58,10 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 
 	NSMutableDictionary *contentViews;
 
+    UIActionSheet *moreActionSheet;
 	UIPrintInteractionController *printInteraction;
-
+    UIDocumentInteractionController *interactionController;
+    
 	NSInteger currentPage;
 
 	CGSize lastAppearSize;
@@ -412,7 +414,11 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 - (void)viewWillDisappear:(BOOL)animated
 {
 	[super viewWillDisappear:animated];
-
+    [moreActionSheet dismissWithClickedButtonIndex:-1 animated:NO];
+    [printInteraction dismissAnimated:NO];
+    [interactionController dismissMenuAnimated:NO];
+    [interactionController dismissPreviewAnimated:NO];
+    
 	lastAppearSize = self.view.bounds.size; // Track view size
 
 #if (READER_DISABLE_IDLE == TRUE) // Option
@@ -755,14 +761,14 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
     
 	BOOL bookmarked = [document.bookmarks containsIndex:page];
     
-    UIActionSheet *moreActionSheet = [[UIActionSheet alloc] initWithTitle:@"More"
-                                                                 delegate:self
-                                                        cancelButtonTitle:@"Dismiss"
-                                                   destructiveButtonTitle:nil
-                                                        otherButtonTitles:(bookmarked ? ReaderActionSheetItemTitleUnbookmark : ReaderActionSheetItemTitleBookmark),
-                                                                          ReaderActionSheetItemTitleEmail,
-                                                                          ReaderActionSheetItemTitleOpenIn,
-                                                                          ReaderActionSheetItemTitlePrint, nil];
+    moreActionSheet = [[UIActionSheet alloc] initWithTitle:@"More"
+                                                  delegate:self
+                                         cancelButtonTitle:@"Dismiss"
+                                    destructiveButtonTitle:nil
+                                         otherButtonTitles:(bookmarked ? ReaderActionSheetItemTitleUnbookmark : ReaderActionSheetItemTitleBookmark),
+                                                            ReaderActionSheetItemTitleEmail,
+                                                            ReaderActionSheetItemTitleOpenIn,
+                                                            ReaderActionSheetItemTitlePrint, nil];
     
     [moreActionSheet showFromBarButtonItem:moreBarButtonItem animated:YES];
 }
@@ -840,8 +846,8 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 }
 
 -(void)actionSheetOpenDocument {
-    UIDocumentInteractionController *interactionController = [UIDocumentInteractionController interactionControllerWithURL:[document fileURL]];
-    [interactionController presentOptionsMenuFromRect:CGRectZero inView:self.view animated:YES];
+    interactionController = [UIDocumentInteractionController interactionControllerWithURL:[document fileURL]];
+    [interactionController presentOptionsMenuFromBarButtonItem:moreBarButtonItem animated:YES];
 }
 
 -(void)actionSheetPrintDocument {
@@ -865,7 +871,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 			printInteraction.printingItem = fileURL;
 			printInteraction.showsPageRange = YES;
             
-            [printInteraction presentAnimated:YES completionHandler:nil];
+            [printInteraction presentFromBarButtonItem:moreBarButtonItem animated:YES completionHandler:nil];
 		}
     }
 }
