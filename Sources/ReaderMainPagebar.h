@@ -26,6 +26,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ReaderThumbView.h"
+#import "UIXToolbarView.h"
 
 @class ReaderMainPagebar;
 @class ReaderTrackControl;
@@ -40,7 +41,7 @@
 
 @end
 
-@interface ReaderMainPagebar : UIView
+@interface ReaderMainPagebar : UIXToolbarView
 
 @property (nonatomic, weak, readwrite) id <ReaderMainPagebarDelegate> delegate;
 
