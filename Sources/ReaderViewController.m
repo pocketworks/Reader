@@ -26,16 +26,23 @@
 #import "ReaderConstants.h"
 #import "ReaderViewController.h"
 #import "ThumbsViewController.h"
-#import "ReaderMainToolbar.h"
 #import "ReaderMainPagebar.h"
 #import "ReaderContentView.h"
 #import "ReaderThumbCache.h"
 #import "ReaderThumbQueue.h"
 
+#import "UINavigationController+NavBarAnimation.h"
+
 #import <MessageUI/MessageUI.h>
 
-@interface ReaderViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate, MFMailComposeViewControllerDelegate,
-									ReaderMainToolbarDelegate, ReaderMainPagebarDelegate, ReaderContentViewDelegate, ThumbsViewControllerDelegate>
+NSString * const  ReaderActionSheetItemTitleEmail    = @"Email";
+NSString * const  ReaderActionSheetItemTitlePrint    = @"Print";
+NSString * const  ReaderActionSheetItemTitleOpenIn   = @"Open In...";
+NSString * const  ReaderActionSheetItemTitleBookmark = @"Bookmark";
+NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
+
+@interface ReaderViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate, UIActionSheetDelegate, MFMailComposeViewControllerDelegate,
+									ReaderMainPagebarDelegate, ReaderContentViewDelegate, ThumbsViewControllerDelegate>
 @end
 
 @implementation ReaderViewController
@@ -44,8 +51,9 @@
 
 	UIScrollView *theScrollView;
 
-//	UINavigationBar *mainNavigationBar;
-
+    UIBarButtonItem *thumbsBarButton;
+    UIBarButtonItem *moreBarButtonItem;
+    
 	ReaderMainPagebar *mainPagebar;
 
 	NSMutableDictionary *contentViews;
@@ -125,15 +133,6 @@
 	{
 		theScrollView.contentOffset = contentOffset; // Update content offset
 	}
-}
-
-- (void)updateToolbarBookmarkIcon
-{
-	NSInteger page = [document.pageNumber integerValue];
-
-	BOOL bookmarked = [document.bookmarks containsIndex:page];
-
-    
 }
 
 - (void)showDocumentPage:(NSInteger)page
@@ -263,8 +262,6 @@
 
 		[mainPagebar updatePagebar]; // Update the pagebar display
 
-		[self updateToolbarBookmarkIcon]; // Update bookmark
-
 		currentPage = page; // Track current page number
 	}
 }
@@ -317,9 +314,7 @@
     
 	self.view.backgroundColor = [UIColor colorWithRed:189/255.0f green:195/255.0f blue:199/255.0f alpha:1.0]; // Neutral gray
 
-	CGRect scrollViewRect = self.view.bounds;
-
-	theScrollView = [[UIScrollView alloc] initWithFrame:scrollViewRect]; // UIScrollView
+	theScrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds]; // UIScrollView
 	theScrollView.autoresizesSubviews = NO;
     theScrollView.contentMode = UIViewContentModeRedraw;
 	theScrollView.showsHorizontalScrollIndicator = NO;
@@ -332,19 +327,22 @@
     theScrollView.delegate = self;
 	
     [self.view addSubview:theScrollView];
-
-	CGRect toolbarRect = scrollViewRect; // Toolbar frame
+    
+    [self setUpBarButtonItems];
+    
+	CGRect toolbarRect = self.view.bounds; // Toolbar frame
 	toolbarRect.size.height = TOOLBAR_HEIGHT; // Default toolbar height
     
-    if ([self navigationController]) {
-        [[self navigationController] setNavigationBarHidden:NO animated:NO];
-    }
+    [[self navigationController] setNavigationBarHidden:NO animated:NO];
     
 	CGRect pagebarRect = self.view.bounds;; // Pagebar frame
 	pagebarRect.origin.y = (pagebarRect.size.height - PAGEBAR_HEIGHT);
 	pagebarRect.size.height = PAGEBAR_HEIGHT; // Default pagebar height
+
 	mainPagebar = [[ReaderMainPagebar alloc] initWithFrame:pagebarRect document:document]; // ReaderMainPagebar
-	mainPagebar.delegate = self; // ReaderMainPagebarDelegate
+	mainPagebar.pagebarDelegate = self; // ReaderMainPagebarDelegate
+    [mainPagebar setBackgroundColor:[UIColor colorWithWhite:1.0f alpha:0.96f]];
+    
 	[self.view addSubview:mainPagebar];
 
 	UITapGestureRecognizer *singleTapOne = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
@@ -362,6 +360,22 @@
 	[singleTapOne requireGestureRecognizerToFail:doubleTapOne]; // Single tap requires double tap to fail
 
 	contentViews = [NSMutableDictionary new]; lastHideTime = [NSDate date];
+}
+
+-(void)setUpBarButtonItems {
+    
+    thumbsBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Reader-Thumbs"]
+                                                                           style:UIBarButtonItemStylePlain
+                                                                          target:self
+                                                                          action:@selector(pushThumbsBarButtonItem:)];
+    
+    
+    moreBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
+                                                                      target:self
+                                                                      action:@selector(pushActionBarButtonItem:)];
+    
+    [self.navigationItem setRightBarButtonItems:@[moreBarButtonItem, thumbsBarButton]];
+
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -629,7 +643,7 @@
 				{
 					if (([self.navigationController isNavigationBarHidden] == YES) || (mainPagebar.hidden == YES))
 					{
-						[self.navigationController setNavigationBarHidden:NO animated:YES];
+						[self.navigationController setNavigationBarHidden:NO animation:ReaderNavigationBarAnimationFade];
                         [mainPagebar showPagebar]; // Show
 					}
 				}
@@ -727,19 +741,141 @@
 			if (CGRectContainsPoint(areaRect, point) == false) return;
 		}
 
-		[self.navigationController setNavigationBarHidden:YES animated:YES];
+		[self.navigationController setNavigationBarHidden:YES animation:ReaderNavigationBarAnimationFade];
         [mainPagebar hidePagebar]; // Hide
 
 		lastHideTime = [NSDate date];
     }
 }
 
+#pragma mark Toolbar button actions
+
+-(void)pushActionBarButtonItem:(id)sender {
+    NSInteger page = [document.pageNumber integerValue];
+    
+	BOOL bookmarked = [document.bookmarks containsIndex:page];
+    
+    UIActionSheet *moreActionSheet = [[UIActionSheet alloc] initWithTitle:@"More"
+                                                                 delegate:self
+                                                        cancelButtonTitle:@"Dismiss"
+                                                   destructiveButtonTitle:nil
+                                                        otherButtonTitles:(bookmarked ? ReaderActionSheetItemTitleUnbookmark : ReaderActionSheetItemTitleBookmark),
+                                                                          ReaderActionSheetItemTitleEmail,
+                                                                          ReaderActionSheetItemTitleOpenIn,
+                                                                          ReaderActionSheetItemTitlePrint, nil];
+    
+    [moreActionSheet showFromBarButtonItem:moreBarButtonItem animated:YES];
+}
+
+-(void)pushThumbsBarButtonItem:(id)sender {
+	if (printInteraction != nil) [printInteraction dismissAnimated:NO]; // Dismiss
+    
+	ThumbsViewController *thumbsViewController = [[ThumbsViewController alloc] initWithReaderDocument:document];
+    
+	thumbsViewController.delegate = self; thumbsViewController.title = self.title;
+    
+	thumbsViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+	thumbsViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+    
+	[self presentViewController:thumbsViewController animated:NO completion:NULL];
+}
+
+-(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+    NSString *buttonTitle = [actionSheet buttonTitleAtIndex:buttonIndex];
+    
+    if ([buttonTitle isEqualToString:ReaderActionSheetItemTitleBookmark]) {
+        [self actionSheetBookmarkDocument];
+    } else if ([buttonTitle isEqualToString:ReaderActionSheetItemTitleUnbookmark]) {
+        [self actionSheetUnbookmarkDocument];
+    } else if ([buttonTitle isEqualToString:ReaderActionSheetItemTitleEmail]) {
+        [self actionSheetEmailDocument];
+    } else if ([buttonTitle isEqualToString:ReaderActionSheetItemTitleOpenIn]) {
+        [self actionSheetOpenDocument];
+    } else if ([buttonTitle isEqualToString:ReaderActionSheetItemTitlePrint]) {
+        [self actionSheetPrintDocument];
+    }
+}
+
+-(void)actionSheetBookmarkDocument {
+    if (printInteraction != nil) [printInteraction dismissAnimated:YES];
+    
+    [document.bookmarks addIndex:[document.pageNumber integerValue]];
+}
+
+-(void)actionSheetUnbookmarkDocument {
+    [document.bookmarks removeIndex:[document.pageNumber integerValue]];
+}
+
+-(void)actionSheetEmailDocument {
+	if ([MFMailComposeViewController canSendMail] == NO) return;
+    
+	if (printInteraction != nil) [printInteraction dismissAnimated:YES];
+    
+	unsigned long long fileSize = [document.fileSize unsignedLongLongValue];
+    
+	if (fileSize < (unsigned long long)15728640) // Check attachment size limit (15MB)
+	{
+		NSURL *fileURL = document.fileURL; NSString *fileName = document.fileName; // Document
+        
+		NSData *attachment = [NSData dataWithContentsOfURL:fileURL options:(NSDataReadingMapped|NSDataReadingUncached) error:nil];
+        
+		if (attachment != nil) // Ensure that we have valid document file attachment data
+		{
+			MFMailComposeViewController *mailComposer = [MFMailComposeViewController new];
+            
+			[mailComposer addAttachmentData:attachment mimeType:@"application/pdf" fileName:fileName];
+            
+			[mailComposer setSubject:fileName]; // Use the document file name for the subject
+            
+			mailComposer.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+			mailComposer.modalPresentationStyle = UIModalPresentationFormSheet;
+            
+			mailComposer.mailComposeDelegate = self; // Set the delegate
+            
+			[self presentViewController:mailComposer animated:YES completion:NULL];
+		}
+	}
+}
+
+-(void)actionSheetOpenDocument {
+    UIDocumentInteractionController *interactionController = [UIDocumentInteractionController interactionControllerWithURL:[document fileURL]];
+    [interactionController presentOptionsMenuFromRect:CGRectZero inView:self.view animated:YES];
+}
+
+-(void)actionSheetPrintDocument {
+    Class printInteractionController = NSClassFromString(@"UIPrintInteractionController");
+    
+	if ((printInteractionController != nil) && [printInteractionController isPrintingAvailable])
+	{
+		NSURL *fileURL = document.fileURL; // Document file URL
+        
+		printInteraction = [printInteractionController sharedPrintController];
+        
+		if ([printInteractionController canPrintURL:fileURL] == YES) // Check first
+		{
+			UIPrintInfo *printInfo = [NSClassFromString(@"UIPrintInfo") printInfo];
+            
+			printInfo.duplex = UIPrintInfoDuplexLongEdge;
+			printInfo.outputType = UIPrintInfoOutputGeneral;
+			printInfo.jobName = document.fileName;
+            
+			printInteraction.printInfo = printInfo;
+			printInteraction.printingItem = fileURL;
+			printInteraction.showsPageRange = YES;
+            
+            [printInteraction presentAnimated:YES completionHandler:nil];
+		}
+    }
+}
+
+-(void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
+    [controller dismissViewControllerAnimated:YES completion:nil];
+}
+
 #pragma mark ThumbsViewControllerDelegate methods
 
 - (void)dismissThumbsViewController:(ThumbsViewController *)viewController
 {
-	[self updateToolbarBookmarkIcon]; // Update bookmark icon
-
 	[self dismissViewControllerAnimated:YES completion:NULL]; // Dismiss
 }
 
