@@ -28,13 +28,3 @@
 @interface UIXToolbarView : UIView
 
 @end
-
-#pragma mark -
-
-//
-//	UIXToolbarShadow class interface
-//
-
-@interface UIXToolbarShadow : UIView
-
-@end

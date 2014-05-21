@@ -51,55 +51,13 @@
 		self.contentMode = UIViewContentModeRedraw;
 		self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 		self.backgroundColor = [UIColor clearColor];
-
-		CAGradientLayer *layer = (CAGradientLayer *)self.layer;
-		UIColor *liteColor = [UIColor colorWithWhite:0.92f alpha:0.8f];
-		UIColor *darkColor = [UIColor colorWithWhite:0.32f alpha:0.8f];
-		layer.colors = [NSArray arrayWithObjects:(id)liteColor.CGColor, (id)darkColor.CGColor, nil];
-
-		CGRect shadowRect = self.bounds; shadowRect.origin.y += shadowRect.size.height; shadowRect.size.height = SHADOW_HEIGHT;
-
-		UIXToolbarShadow *shadowView = [[UIXToolbarShadow alloc] initWithFrame:shadowRect];
-
-		[self addSubview:shadowView]; 
-	}
-
-	return self;
-}
-
-@end
-
-#pragma mark -
-
-//
-//	UIXToolbarShadow class implementation
-//
-
-@implementation UIXToolbarShadow
-
-#pragma mark UIXToolbarShadow class methods
-
-+ (Class)layerClass
-{
-	return [CAGradientLayer class];
-}
-
-#pragma mark UIXToolbarShadow instance methods
-
-- (id)initWithFrame:(CGRect)frame
-{
-	if ((self = [super initWithFrame:frame]))
-	{
-		self.autoresizesSubviews = NO;
-		self.userInteractionEnabled = NO;
-		self.contentMode = UIViewContentModeRedraw;
-		self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-		self.backgroundColor = [UIColor clearColor];
-
-		CAGradientLayer *layer = (CAGradientLayer *)self.layer;
-		UIColor *blackColor = [UIColor colorWithWhite:0.24f alpha:1.0f];
-		UIColor *clearColor = [UIColor colorWithWhite:0.24f alpha:0.0f];
-		layer.colors = [NSArray arrayWithObjects:(id)blackColor.CGColor, (id)clearColor.CGColor, nil];
+        
+		[self setBackgroundColor:[UIColor colorWithRed:52/255.0f green:152/255.0f blue:219/255.0f alpha:1.0]];
+        
+        [self.layer setMasksToBounds:NO];
+        [self.layer setShadowOffset:CGSizeMake(0.0f, 2.0f)];
+        [self.layer setShadowColor:[UIColor blackColor].CGColor];
+        [self.layer setShadowOpacity:0.3];
 	}
 
 	return self;
