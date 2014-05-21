@@ -62,7 +62,7 @@
 
 #pragma mark Properties
 
-@synthesize delegate;
+@synthesize pagebarDelegate;
 
 #pragma mark ReaderMainPagebar class methods
 
@@ -370,7 +370,7 @@
 
 	if (trackControl.tag != [document.pageNumber integerValue]) // Only if different
 	{
-		[delegate pagebar:self gotoPage:trackControl.tag]; // Go to document page
+		[pagebarDelegate pagebar:self gotoPage:trackControl.tag]; // Go to document page
 	}
 }
 
@@ -446,7 +446,7 @@
 	{
 		trackView.userInteractionEnabled = NO; // Disable track control interaction
 
-		[delegate pagebar:self gotoPage:trackView.tag]; // Go to document page
+		[pagebarDelegate pagebar:self gotoPage:trackView.tag]; // Go to document page
 
 		[self startEnableTimer]; // Start track control enable timer
 	}

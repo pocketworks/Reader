@@ -43,7 +43,7 @@
 
 @interface ReaderMainPagebar : UIToolbar
 
-@property (nonatomic, weak, readwrite) id <ReaderMainPagebarDelegate> delegate;
+@property (nonatomic, weak, readwrite) id <ReaderMainPagebarDelegate> pagebarDelegate;
 
 - (id)initWithFrame:(CGRect)frame document:(ReaderDocument *)object;
 
