@@ -39,14 +39,23 @@
 - (void)tappedInToolbar:(ReaderMainToolbar *)toolbar printButton:(UIButton *)button;
 - (void)tappedInToolbar:(ReaderMainToolbar *)toolbar emailButton:(UIButton *)button;
 - (void)tappedInToolbar:(ReaderMainToolbar *)toolbar markButton:(UIButton *)button;
+- (void)tappedInToolbar:(ReaderMainToolbar *)toolbar iBooksButton:(UIButton *)button;
 
 @end
+
+typedef NS_ENUM(NSUInteger, MXLDoneButtonType) {
+    MXLDoneButtonTypeBack,
+    MXLDoneButtonTypePopSideMenu,
+    MXLDoneButtonTypeNone
+};
 
 @interface ReaderMainToolbar : UIXToolbarView
 
 @property (nonatomic, weak, readwrite) id <ReaderMainToolbarDelegate> delegate;
+@property (assign, nonatomic, readwrite) MXLDoneButtonType doneButtonType;
 
 - (id)initWithFrame:(CGRect)frame document:(ReaderDocument *)object;
+- (id)initWithFrame:(CGRect)frame document:(ReaderDocument *)object doneButtonStyle:(MXLDoneButtonType)type;
 
 - (void)setBookmarkState:(BOOL)state;
 
