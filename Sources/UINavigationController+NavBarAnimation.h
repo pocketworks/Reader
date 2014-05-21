@@ -8,6 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSUInteger, ReaderNavigationBarAnimation) {
+    ReaderNavigationBarAnimationFade
+};
+
 @interface UINavigationController (NavBarAnimation)
+
+-(void)setNavigationBarHidden:(BOOL)hidden animation:(ReaderNavigationBarAnimation)animation;
 
 @end
