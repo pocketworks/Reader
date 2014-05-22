@@ -313,7 +313,7 @@
 
 	[encoder encodeObject:_fileDate forKey:@"FileDate"];
 
-	[encoder encodeObject:_pageCount forKey:@"PageCount"];
+	[encoder encodeObject:[NSNumber numberWithInteger:0] forKey:@"PageCount"];
 
 	[encoder encodeObject:_pageNumber forKey:@"PageNumber"];
 

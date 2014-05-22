@@ -34,7 +34,7 @@
 
 #pragma mark Constants
 
-#define DEMO_VIEW_CONTROLLER_PUSH FALSE
+#define DEMO_VIEW_CONTROLLER_PUSH TRUE
 
 
 #pragma mark UIViewController methods
@@ -64,7 +64,8 @@
     
 	self.view.backgroundColor = [UIColor clearColor]; // Transparent
     
-    [[[self navigationController] navigationBar] setBackgroundColor:[UIColor colorWithRed:52/255.0f green:152/255.0f blue:219/255.0f alpha:1.0]];
+    [[[self navigationController] navigationBar] setBarTintColor:[UIColor whiteColor]];
+    [[[self navigationController] navigationBar] setTitleTextAttributes:@{UITextAttributeTextColor: [UIColor blackColor]}];
     
 	NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
 

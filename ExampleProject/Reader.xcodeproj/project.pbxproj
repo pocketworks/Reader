@@ -247,6 +247,8 @@
 		9F3700CF192E0672003391C5 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				9F3700DC192E0672003391C5 /* ReaderViewController.h */,
+				9F3700DD192E0672003391C5 /* ReaderViewController.m */,
 				9F3700D0192E0672003391C5 /* ReaderConstants.h */,
 				9F3700D1192E0672003391C5 /* ReaderConstants.m */,
 				9F3700D2192E0672003391C5 /* ReaderContentPage.h */,
@@ -259,8 +261,6 @@
 				9F3700D9192E0672003391C5 /* ReaderDocument.m */,
 				9F3700DA192E0672003391C5 /* ReaderMainPagebar.h */,
 				9F3700DB192E0672003391C5 /* ReaderMainPagebar.m */,
-				9F3700DC192E0672003391C5 /* ReaderViewController.h */,
-				9F3700DD192E0672003391C5 /* ReaderViewController.m */,
 				9F3700DE192E0672003391C5 /* Supporting */,
 				9F3700F5192E0672003391C5 /* ThumbsViewController.h */,
 				9F3700F6192E0672003391C5 /* ThumbsViewController.m */,
