@@ -127,10 +127,8 @@
 - (void)handleSingleTap:(UITapGestureRecognizer *)recognizer
 {
 	NSString *phrase = nil; // Document password (for unlocking most encrypted PDF files)
-
-	NSArray *pdfs = [[NSBundle mainBundle] pathsForResourcesOfType:@"pdf" inDirectory:nil];
-
-	NSString *filePath = [pdfs lastObject]; assert(filePath != nil); // Path to last PDF file
+    
+	NSString *filePath = [[NSBundle mainBundle] pathForResource:@"hackermonthly-issue2" ofType:@"pdf"];
 
 	ReaderDocument *document = [ReaderDocument withDocumentFilePath:filePath password:phrase];
 
