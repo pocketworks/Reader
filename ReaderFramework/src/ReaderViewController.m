@@ -64,7 +64,8 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
     UIDocumentInteractionController *interactionController;
     
 	NSInteger currentPage;
-
+    NSInteger currentScrollViewPage;
+    
 	CGSize lastAppearSize;
 
 	NSDate *lastHideTime;
@@ -451,7 +452,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 
 	theScrollView = nil; contentViews = nil; lastHideTime = nil;
 
-	lastAppearSize = CGSizeZero; currentPage = 0;
+	lastAppearSize = CGSizeZero; currentPage = 0; currentScrollViewPage = 0;
 
 	[super viewDidUnload];
 }
@@ -515,26 +516,59 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 
 #pragma mark UIScrollViewDelegate methods
 
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-	__block NSInteger page = 0;
-
-	CGFloat contentOffsetX = scrollView.contentOffset.x;
-
-	[contentViews enumerateKeysAndObjectsUsingBlock: // Enumerate content views
-		^(id key, id object, BOOL *stop)
-		{
-			ReaderContentView *contentView = object;
-
-			if (contentView.frame.origin.x == contentOffsetX)
-			{
-				page = contentView.tag; *stop = YES;
-			}
-		}
-	];
-
-	if (page != 0) [self showDocumentPage:page]; // Show the page
+    NSInteger scrollViewPage = 0;
+    CGFloat pageWidth = scrollView.frame.size.width;
+    CGFloat contentOffsetX = scrollView.contentOffset.x;
+    
+    if ((currentScrollViewPage == 0 && contentOffsetX < pageWidth) || contentOffsetX <= 0) {
+        scrollViewPage = 0;
+    } else if ((currentScrollViewPage == 2 && contentOffsetX <= pageWidth) || (currentScrollViewPage != 2 && contentOffsetX < 2 * pageWidth)) {
+        scrollViewPage = 1;
+    } else {
+        scrollViewPage = 2;
+    }
+    
+    if (scrollViewPage != currentScrollViewPage) {
+        currentScrollViewPage = scrollViewPage;
+        
+        CGFloat contentOffsetX = scrollView.frame.size.width * scrollViewPage;
+        
+        __block NSInteger page = 0;
+        
+        [contentViews enumerateKeysAndObjectsUsingBlock:^(id key, ReaderContentView *contentView, BOOL *stop) {
+            if (contentView.frame.origin.x == contentOffsetX) {
+                page = contentView.tag; *stop = YES;
+            }
+        }];
+        
+        if (page != 0)  {
+            [self showDocumentPage:page]; // Show the page
+        }
+    }
 }
+
+//- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+//{
+//	__block NSInteger page = 0;
+//
+//	CGFloat contentOffsetX = scrollView.contentOffset.x;
+//
+//	[contentViews enumerateKeysAndObjectsUsingBlock: // Enumerate content views
+//		^(id key, id object, BOOL *stop)
+//		{
+//			ReaderContentView *contentView = object;
+//
+//			if (contentView.frame.origin.x == contentOffsetX)
+//			{
+//				page = contentView.tag; *stop = YES;
+//			}
+//		}
+//	];
+//
+//	if (page != 0) [self showDocumentPage:page]; // Show the page
+//}
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
