@@ -39,8 +39,13 @@
 
 @interface ReaderViewController : UIViewController
 
+@property (strong, nonatomic, readwrite) ReaderDocument *document;
+@property (assign, nonatomic, readwrite) NSInteger currentPage;
+
 @property (nonatomic, weak, readwrite) id <ReaderViewControllerDelegate> delegate;
 
 - (id)initWithReaderDocument:(ReaderDocument *)object;
+
+- (void)showDocumentPage:(NSInteger)page;
 
 @end

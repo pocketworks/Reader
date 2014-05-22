@@ -47,8 +47,6 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 
 @implementation ReaderViewController
 {
-	ReaderDocument *document;
-
 	UIScrollView *theScrollView;
 
     UIBarButtonItem *doneBarButtonItem;
@@ -63,7 +61,6 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 	UIPrintInteractionController *printInteraction;
     UIDocumentInteractionController *interactionController;
     
-	NSInteger currentPage;
     NSInteger currentScrollViewPage;
     
 	CGSize lastAppearSize;
@@ -92,7 +89,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 
 - (void)updateScrollViewContentSize
 {
-	NSInteger count = [document.pageCount integerValue];
+	NSInteger count = [_document.pageCount integerValue];
 
 	if (count > PAGING_VIEWS) count = PAGING_VIEWS; // Limit
 
@@ -118,7 +115,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 
 	__block CGRect viewRect = CGRectZero; viewRect.size = theScrollView.bounds.size;
 
-	__block CGPoint contentOffset = CGPointZero; NSInteger page = [document.pageNumber integerValue];
+	__block CGPoint contentOffset = CGPointZero; NSInteger page = [_document.pageNumber integerValue];
 
 	[pageSet enumerateIndexesUsingBlock: // Enumerate page number set
 		^(NSUInteger number, BOOL *stop)
@@ -141,10 +138,10 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 
 - (void)showDocumentPage:(NSInteger)page
 {
-	if (page != currentPage) // Only if different
+	if (page != _currentPage) // Only if different
 	{
 		NSInteger minValue; NSInteger maxValue;
-		NSInteger maxPage = [document.pageCount integerValue];
+		NSInteger maxPage = [_document.pageCount integerValue];
 		NSInteger minPage = 1;
 
 		if ((page < minPage) || (page > maxPage)) return;
@@ -180,7 +177,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 
 			if (contentView == nil) // Create a brand new document content view
 			{
-				NSURL *fileURL = document.fileURL; NSString *phrase = document.password; // Document properties
+				NSURL *fileURL = _document.fileURL; NSString *phrase = _document.password; // Document properties
 
 				contentView = [[ReaderContentView alloc] initWithFrame:viewRect fileURL:fileURL page:number password:phrase];
 
@@ -233,12 +230,12 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 			theScrollView.contentOffset = contentOffset; // Update content offset
 		}
 
-		if ([document.pageNumber integerValue] != page) // Only if different
+		if ([_document.pageNumber integerValue] != page) // Only if different
 		{
-			document.pageNumber = [NSNumber numberWithInteger:page]; // Update page number
+			_document.pageNumber = [NSNumber numberWithInteger:page]; // Update page number
 		}
 
-		NSURL *fileURL = document.fileURL; NSString *phrase = document.password; NSString *guid = document.guid;
+		NSURL *fileURL = _document.fileURL; NSString *phrase = _document.password; NSString *guid = _document.guid;
 
 		if ([newPageSet containsIndex:page] == YES) // Preview visible page first
 		{
@@ -266,7 +263,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 
 		[mainPagebar updatePagebar]; // Update the pagebar display
 
-		currentPage = page; // Track current page number
+		_currentPage = page; // Track current page number
 	}
 }
 
@@ -274,9 +271,9 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 {
 	[self updateScrollViewContentSize]; // Set content size
 
-	[self showDocumentPage:[document.pageNumber integerValue]];
+	[self showDocumentPage:[_document.pageNumber integerValue]];
 
-	document.lastOpen = [NSDate date]; // Update last opened date
+	_document.lastOpen = [NSDate date]; // Update last opened date
 
 	isVisible = YES; // iOS present modal bodge
     
@@ -298,7 +295,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 
 			[notificationCenter addObserver:self selector:@selector(applicationWill:) name:UIApplicationWillResignActiveNotification object:nil];
 
-			[object updateProperties]; document = object; // Retain the supplied ReaderDocument object for our use
+			[object updateProperties]; _document = object; // Retain the supplied ReaderDocument object for our use
 
 			[ReaderThumbCache touchThumbCacheWithGUID:object.guid]; // Touch the document thumb cache directory
 
@@ -313,7 +310,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 {
 	[super viewDidLoad];
 
-	assert(document != nil); // Must have a valid ReaderDocument
+	assert(_document != nil); // Must have a valid ReaderDocument
     [self setAutomaticallyAdjustsScrollViewInsets:NO];
     
 	self.view.backgroundColor = [UIColor colorWithRed:189/255.0f green:195/255.0f blue:199/255.0f alpha:1.0]; // Neutral gray
@@ -343,7 +340,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 	pagebarRect.origin.y = (pagebarRect.size.height - PAGEBAR_HEIGHT);
 	pagebarRect.size.height = PAGEBAR_HEIGHT; // Default pagebar height
 
-	mainPagebar = [[ReaderMainPagebar alloc] initWithFrame:pagebarRect document:document]; // ReaderMainPagebar
+	mainPagebar = [[ReaderMainPagebar alloc] initWithFrame:pagebarRect document:_document]; // ReaderMainPagebar
 	mainPagebar.pagebarDelegate = self; // ReaderMainPagebarDelegate
     [mainPagebar setBackgroundColor:[UIColor colorWithWhite:1.0f alpha:0.96f]];
     
@@ -452,7 +449,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 
 	theScrollView = nil; contentViews = nil; lastHideTime = nil;
 
-	lastAppearSize = CGSizeZero; currentPage = 0; currentScrollViewPage = 0;
+	lastAppearSize = CGSizeZero; _currentPage = 0; currentScrollViewPage = 0;
 
 	[super viewDidUnload];
 }
@@ -592,8 +589,8 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 {
 	if (theScrollView.tag == 0) // Scroll view did end
 	{
-		NSInteger page = [document.pageNumber integerValue];
-		NSInteger maxPage = [document.pageCount integerValue];
+		NSInteger page = [_document.pageNumber integerValue];
+		NSInteger maxPage = [_document.pageCount integerValue];
 		NSInteger minPage = 1; // Minimum
 
 		if ((maxPage > minPage) && (page != minPage))
@@ -613,8 +610,8 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 {
 	if (theScrollView.tag == 0) // Scroll view did end
 	{
-		NSInteger page = [document.pageNumber integerValue];
-		NSInteger maxPage = [document.pageCount integerValue];
+		NSInteger page = [_document.pageNumber integerValue];
+		NSInteger maxPage = [_document.pageCount integerValue];
 		NSInteger minPage = 1; // Minimum
 
 		if ((maxPage > minPage) && (page != maxPage))
@@ -642,7 +639,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 
 		if (CGRectContainsPoint(areaRect, point)) // Single tap is inside the area
 		{
-			NSInteger page = [document.pageNumber integerValue]; // Current page #
+			NSInteger page = [_document.pageNumber integerValue]; // Current page #
 
 			NSNumber *key = [NSNumber numberWithInteger:page]; // Page number key
 
@@ -731,7 +728,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 
 		if (CGRectContainsPoint(zoomArea, point)) // Double tap is in the zoom area
 		{
-			NSInteger page = [document.pageNumber integerValue]; // Current page #
+			NSInteger page = [_document.pageNumber integerValue]; // Current page #
 
 			NSNumber *key = [NSNumber numberWithInteger:page]; // Page number key
 
@@ -809,9 +806,9 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 }
 
 -(void)pushActionBarButtonItem:(id)sender {
-    NSInteger page = [document.pageNumber integerValue];
+    NSInteger page = [_document.pageNumber integerValue];
     
-	BOOL bookmarked = [document.bookmarks containsIndex:page];
+	BOOL bookmarked = [_document.bookmarks containsIndex:page];
     
     moreActionSheet = [[UIActionSheet alloc] initWithTitle:@"More"
                                                   delegate:self
@@ -827,7 +824,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 
 -(void)pushThumbsBarButtonItem:(id)sender {
     
-	ThumbsViewController *thumbsViewController = [[ThumbsViewController alloc] initWithReaderDocument:document];
+	ThumbsViewController *thumbsViewController = [[ThumbsViewController alloc] initWithReaderDocument:_document];
     
 	thumbsViewController.delegate = self; thumbsViewController.title = self.title;
     
@@ -857,21 +854,21 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 
 -(void)actionSheetBookmarkDocument {
     
-    [document.bookmarks addIndex:[document.pageNumber integerValue]];
+    [_document.bookmarks addIndex:[_document.pageNumber integerValue]];
 }
 
 -(void)actionSheetUnbookmarkDocument {
-    [document.bookmarks removeIndex:[document.pageNumber integerValue]];
+    [_document.bookmarks removeIndex:[_document.pageNumber integerValue]];
 }
 
 -(void)actionSheetEmailDocument {
 	if ([MFMailComposeViewController canSendMail] == NO) return;
     
-	unsigned long long fileSize = [document.fileSize unsignedLongLongValue];
+	unsigned long long fileSize = [_document.fileSize unsignedLongLongValue];
     
 	if (fileSize < (unsigned long long)15728640) // Check attachment size limit (15MB)
 	{
-		NSURL *fileURL = document.fileURL; NSString *fileName = document.fileName; // Document
+		NSURL *fileURL = _document.fileURL; NSString *fileName = _document.fileName; // Document
         
 		NSData *attachment = [NSData dataWithContentsOfURL:fileURL options:(NSDataReadingMapped|NSDataReadingUncached) error:nil];
         
@@ -894,7 +891,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 }
 
 -(void)actionSheetOpenDocument {
-    interactionController = [UIDocumentInteractionController interactionControllerWithURL:[document fileURL]];
+    interactionController = [UIDocumentInteractionController interactionControllerWithURL:[_document fileURL]];
     [interactionController presentOptionsMenuFromBarButtonItem:moreBarButtonItem animated:YES];
 }
 
@@ -903,7 +900,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
     
 	if ((printInteractionController != nil) && [printInteractionController isPrintingAvailable])
 	{
-		NSURL *fileURL = document.fileURL; // Document file URL
+		NSURL *fileURL = _document.fileURL; // Document file URL
         
 		printInteraction = [printInteractionController sharedPrintController];
         
@@ -913,7 +910,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
             
 			printInfo.duplex = UIPrintInfoDuplexLongEdge;
 			printInfo.outputType = UIPrintInfoOutputGeneral;
-			printInfo.jobName = document.fileName;
+			printInfo.jobName = _document.fileName;
             
 			printInteraction.printInfo = printInfo;
 			printInteraction.printingItem = fileURL;
@@ -951,7 +948,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 
 - (void)applicationWill:(NSNotification *)notification
 {
-	[document saveReaderDocument]; // Save any ReaderDocument object changes
+	[_document saveReaderDocument]; // Save any ReaderDocument object changes
 
 	if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad)
 	{
