@@ -10,13 +10,12 @@ Here's a list of the changes I made for the initial version:
 
 * Optimised UI for iOS 7 style.
 * Implemented fast pagination as per [this pull request](https://github.com/vfr/Reader/pull/48).
-* Ditched the ReaderMainToolbar for the top toolbar. The viewer now uses the current UINavigationController's nav bar. **Note: this mean the the viewer is required to be shown in a UINavigationController isntance. See below.** 
-* Ditched cluttered bar button items in favor of a 'thumbs' and a 'more' UIBarButtonItem.
+* Ditched the ReaderMainToolbar for the top toolbar. The viewer now uses the current UINavigationController's nav bar. **Note: this means the the viewer is required to be shown in a UINavigationController isntance. See below.** 
+* Ditched cluttered bar button items in favor of two UIBarButtonItems.
 * Added ability to open PDF in other apps.
 * Moved all framework files into dedicated folder (ReaderFramework).
 * Moved assets into Reader.bundle file in /ReaderFramework.
 * Added UIPopover approach for iPad actions (see [here](http://imgur.com/rg25feZ)).
-
 
 Here's how it looks now:
 
