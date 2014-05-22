@@ -96,14 +96,6 @@
 	[self.view addGestureRecognizer:singleTap];
 }
 
--(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    [super observeValueForKeyPath:keyPath
-                         ofObject:object
-                           change:change
-                          context:context];
-
-}
-
 - (void)viewDidUnload
 {
 #ifdef DEBUG
@@ -120,21 +112,6 @@
 	else
 		return YES;
 }
-
-/*
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
-{
-}
-
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration
-{
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-	//if (fromInterfaceOrientation == self.interfaceOrientation) return;
-}
-*/
 
 - (void)didReceiveMemoryWarning
 {
