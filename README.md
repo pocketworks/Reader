@@ -23,6 +23,13 @@ Here's how it looks now:
 ![iPod Page](http://i.imgur.com/551VLUx.png)
 ![iPod Page](http://i.imgur.com/0nrtfWd.png)
 
+### Installation
+Cocoapods of course!
+
+```
+pod 'ReaderFramework', '~> 1.0.0'
+```
+
 ### Usage
 As mentioned above, you now need to show the ReaderViewController instance in UINavigationController stack. So if you want to push it onto the stack, simply:
 
