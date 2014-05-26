@@ -3,10 +3,10 @@
 
 ### Introduction
 
-I loved the original version of this project. It was the only decent open source PDF reader for iOS. The one caveat for me was it's incredibly dated UI. So with this in mind I forked the project and optimised the UI for iOS 7 and added a few more necessary tweaks.
+I loved the original version of this project. It was the only decent open source PDF reader for iOS. The one caveat for me was its incredibly dated UI. So with this in mind, I forked the project and optimised the UI for iOS 7 and added a few more necessary tweaks.
 
 ### What's New
-Here's a list of the changes I made for the initial version:
+Here's a list of the changes I've made for the initial version:
 
 * Optimised UI for iOS 7 style.
 * Implemented fast pagination as per [this pull request](https://github.com/vfr/Reader/pull/48).
