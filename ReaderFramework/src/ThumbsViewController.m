@@ -158,8 +158,8 @@
                                                                       action:@selector(pushDoneBarButtonItem:)];
     [self.navigationItem setLeftBarButtonItem:doneBarButtonItem];
 
-    UIImage *thumbsImage = [UIImage imageNamed:@"Reader.bundle/Reader-Thumbs"];
-    UIImage *bookmarkImage = [UIImage imageNamed:@"Reader.bundle/Reader-Mark-Y"];
+    UIImage *thumbsImage = [UIImage imageNamed:@"Reader.bundle/Thumbs"];
+    UIImage *bookmarkImage = [UIImage imageNamed:@"Reader.bundle/Bookmark-Tassle"];
     NSArray *buttonItems = [NSArray arrayWithObjects:thumbsImage, bookmarkImage, nil];
 
     toggleBookmarksSegmentedControl = [[UISegmentedControl alloc] initWithItems:buttonItems];
@@ -398,7 +398,7 @@
 
 		[imageView addSubview:tintView];
 
-		UIImage *image = [UIImage imageNamed:@"Reader.bundle/Reader-Mark-Y"];
+		UIImage *image = [UIImage imageNamed:@"Reader.bundle/Bookmark-Tassle-Selected"];
 
 		bookMark = [[UIImageView alloc] initWithImage:image];
 
