@@ -372,7 +372,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
         
     }
     
-    thumbsBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Reader.bundle/Reader-Thumbs"]
+    thumbsBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Reader.bundle/Thumbs"]
                                                                            style:UIBarButtonItemStylePlain
                                                                           target:self
                                                                           action:@selector(pushThumbsBarButtonItem:)];
