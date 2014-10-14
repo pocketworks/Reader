@@ -21,5 +21,5 @@ Pod::Spec.new do |s|
 
   s.source_files  = 'Classes', 'ReaderFramework/**/*.{h,m}'
   s.requires_arc = true
-  s.resources = ["ReaderFramework/Reader.bundle"]
+  s.resource = "ReaderFramework/Reader.bundle"
 end
