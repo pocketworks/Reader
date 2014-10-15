@@ -382,7 +382,11 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
                                                                       target:self
                                                                       action:@selector(pushActionBarButtonItem:)];
     
-    [self.navigationItem setRightBarButtonItems:@[moreBarButtonItem, thumbsBarButton]];
+    if (self.remoteNavigationItem) {
+        [self.remoteNavigationItem setRightBarButtonItems:@[moreBarButtonItem, thumbsBarButton]];
+    } else {
+        [self.navigationItem setRightBarButtonItems:@[moreBarButtonItem, thumbsBarButton]];
+    }
 
 }
 
