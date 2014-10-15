@@ -36,33 +36,33 @@ As mentioned above, you now need to show the ReaderViewController instance in UI
 
 ```objectivec
 
-	-(void)pushShowPDFReader:(id)sender {
-		NSString *filePath = [[NSBundle mainBundle] pathForResource:@"mydocument" ofType:@"pdf"];
-		ReaderDocument *document = [ReaderDocument withDocumentFilePath:filePath password:phrase];
+-(void)pushShowPDFReader:(id)sender {
+	NSString *filePath = [[NSBundle mainBundle] pathForResource:@"mydocument" ofType:@"pdf"];
+	ReaderDocument *document = [ReaderDocument withDocumentFilePath:filePath password:phrase];
+
+	ReaderViewController *readerViewController = [[ReaderViewController alloc] initWithReaderDocument:document];
+	readerViewController.delegate = self;
 	
-		ReaderViewController *readerViewController = [[ReaderViewController alloc] initWithReaderDocument:document];
-		readerViewController.delegate = self;
-		
-		[self.navigationController pushViewController:readerViewController animated:YES];
-	}
+	[self.navigationController pushViewController:readerViewController animated:YES];
+}
 ```
 
 You can also display it modally, but you need to show it in a UINavigationController:
 
 ```objectivec
 
-    -(void)pushShowPDFReaderModally:(id)sender {
-    
-		NSString *filePath = [[NSBundle mainBundle] pathForResource:@"mydocument" ofType:@"pdf"];
-		ReaderDocument *document = [ReaderDocument withDocumentFilePath:filePath password:phrase];
+-(void)pushShowPDFReaderModally:(id)sender {
+   
+	NSString *filePath = [[NSBundle mainBundle] pathForResource:@"mydocument" ofType:@"pdf"];
+	ReaderDocument *document = [ReaderDocument withDocumentFilePath:filePath password:phrase];
 
-		ReaderViewController *readerViewController = [[ReaderViewController alloc] initWithReaderDocument:document];
-		readerViewController.delegate = self;
+	ReaderViewController *readerViewController = [[ReaderViewController alloc] initWithReaderDocument:document];
+	readerViewController.delegate = self;
+
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:readerViewController];
 	
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:readerViewController];
-		
-		[self presentViewController:navigationController animated:YES completion:nil];
-	}
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
 ```
 
 #### Alternative usage
@@ -71,42 +71,42 @@ You can also use ReaderViewController as a subview of a normal UIViewController.
 
 ```objectivec
 
-    -(void)addReaderToView:(id)sender {
-    
-		NSString *filePath = [[NSBundle mainBundle] pathForResource:@"mydocument" ofType:@"pdf"];
-		ReaderDocument *document = [ReaderDocument withDocumentFilePath:filePath password:phrase];
+-(void)addReaderToView:(id)sender {
+   
+	NSString *filePath = [[NSBundle mainBundle] pathForResource:@"mydocument" ofType:@"pdf"];
+	ReaderDocument *document = [ReaderDocument withDocumentFilePath:filePath password:phrase];
 
-		_readerViewController = [[ReaderViewController alloc] initWithReaderDocument:document];
-		_readerViewController.delegate = self;
-	    _readerViewController.remoteNavigationItem = self.navigationItem;
-	    _readerViewController.remoteNavigationController = self.navigationController;
+	_readerViewController = [[ReaderViewController alloc] initWithReaderDocument:document];
+	_readerViewController.delegate = self;
+    _readerViewController.remoteNavigationItem = self.navigationItem;
+    _readerViewController.remoteNavigationController = self.navigationController;
+
+    [self.view addSubview:_readerViewController.view];
 	
-	    [self.view addSubview:_readerViewController.view];
-		
-	}
-	
-	// IMPORTANT:
-	// You will need to notify ReaderViewController when the view state changes.
-	
-	- (void)viewWillAppear:(BOOL)animated {
-	    [super viewWillAppear:animated];
-	    [_readerViewController viewWillAppear:animated];
-	}
-	
-	- (void)viewDidAppear:(BOOL)animated {
-	    [super viewDidAppear:animated];
-	    [_readerViewController viewDidAppear:animated];
-	}
-	
-	- (void)viewWillDisappear:(BOOL)animated {
-	    [super viewWillDisappear:animated];
-	    [_readerViewController viewWillDisappear:animated];
-	}
-	
-	- (void)viewDidDisappear:(BOOL)animated {
-	    [super viewDidDisappear:animated];
-	    [_readerViewController viewDidDisappear:animated];
-	}
+}
+
+// IMPORTANT:
+// You will need to notify ReaderViewController when the view state changes.
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [_readerViewController viewWillAppear:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [_readerViewController viewDidAppear:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [_readerViewController viewWillDisappear:animated];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [_readerViewController viewDidDisappear:animated];
+}
 
 ```
 
