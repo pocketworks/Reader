@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "ReaderFramework"
-  s.version      = "1.1.2"
+  s.version      = "1.1.3"
   s.summary      = "A flexible PDF reader for iOS 7"
 
   s.description  = <<-DESC
@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.platform     = :ios, '7.0'
   s.source       = { 
                      :git => "https://github.com/KiranPanesar/Reader.git",
-                     :tag => "1.1.2"
+                     :tag => "1.1.3"
                    }
 
   s.source_files  = 'Classes', 'ReaderFramework/**/*.{h,m}'
