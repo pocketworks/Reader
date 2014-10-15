@@ -16,6 +16,7 @@ Here's a list of the changes I've made for the initial version:
 * Moved all framework files into dedicated folder (ReaderFramework).
 * Moved assets into Reader.bundle file in /ReaderFramework.
 * Added UIPopover approach for iPad actions (see [here](http://imgur.com/rg25feZ)).
+* Added ability to embed ReaderViewController's view in a UIViewController's subview (and still have nav bar support).
 
 Here's how it looks now:
 
@@ -27,13 +28,14 @@ Here's how it looks now:
 Cocoapods of course!
 
 ```
-pod 'ReaderFramework', '~> 1.0.0'
+pod 'ReaderFramework', '~> 1.1.2'
 ```
 
 ### Usage
 As mentioned above, you now need to show the ReaderViewController instance in UINavigationController stack. So if you want to push it onto the stack, simply:
 
 ```objectivec
+
 -(void)pushShowPDFReader:(id)sender {
 	NSString *filePath = [[NSBundle mainBundle] pathForResource:@"mydocument" ofType:@"pdf"];
 	ReaderDocument *document = [ReaderDocument withDocumentFilePath:filePath password:phrase];
@@ -48,17 +50,64 @@ As mentioned above, you now need to show the ReaderViewController instance in UI
 You can also display it modally, but you need to show it in a UINavigationController:
 
 ```objectivec
+
 -(void)pushShowPDFReaderModally:(id)sender {
+   
 	NSString *filePath = [[NSBundle mainBundle] pathForResource:@"mydocument" ofType:@"pdf"];
 	ReaderDocument *document = [ReaderDocument withDocumentFilePath:filePath password:phrase];
 
 	ReaderViewController *readerViewController = [[ReaderViewController alloc] initWithReaderDocument:document];
 	readerViewController.delegate = self;
-	
+
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:readerViewController];
-		
+	
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
+```
+
+#### Alternative usage
+
+You can also use ReaderViewController as a subview of a normal UIViewController. This requires extra, slightly obscure setup, so is not the recommended method. With that being said, here's an example:
+
+```objectivec
+
+-(void)addReaderToView:(id)sender {
+   
+	NSString *filePath = [[NSBundle mainBundle] pathForResource:@"mydocument" ofType:@"pdf"];
+	ReaderDocument *document = [ReaderDocument withDocumentFilePath:filePath password:phrase];
+
+	_readerViewController = [[ReaderViewController alloc] initWithReaderDocument:document];
+	_readerViewController.delegate = self;
+    _readerViewController.remoteNavigationItem = self.navigationItem;
+    _readerViewController.remoteNavigationController = self.navigationController;
+
+    [self.view addSubview:_readerViewController.view];
+	
+}
+
+// IMPORTANT:
+// You will need to notify ReaderViewController when the view state changes.
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [_readerViewController viewWillAppear:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [_readerViewController viewDidAppear:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [_readerViewController viewWillDisappear:animated];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [_readerViewController viewDidDisappear:animated];
+}
+
 ```
 
 

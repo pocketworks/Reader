@@ -25,8 +25,12 @@
 
 #import "ReaderDemoController.h"
 #import "ReaderViewController.h"
+#import "ReaderFileViewController.h"
 
 @interface ReaderDemoController () <ReaderViewControllerDelegate>
+
+- (void)pushStandardViewControllerButton:(id)sender;
+- (void)pushSubviewViewControllerButton:(id)sender;
 
 @end
 
@@ -34,29 +38,10 @@
 
 #pragma mark Constants
 
-#define DEMO_VIEW_CONTROLLER_PUSH TRUE
-
+#define DEMO_VIEW_CONTROLLER_PUSH FALSE
 
 #pragma mark UIViewController methods
 
-/*
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-	if ((self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]))
-	{
-		// Custom initialization
-	}
-
-	return self;
-}
-*/
-
-/*
-- (void)loadView
-{
-	// Implement loadView to create a view hierarchy programmatically, without using a nib.
-}
-*/
 
 - (void)viewDidLoad
 {
@@ -67,42 +52,29 @@
     [[[self navigationController] navigationBar] setBarTintColor:[UIColor whiteColor]];
     [[[self navigationController] navigationBar] setTitleTextAttributes:@{UITextAttributeTextColor: [UIColor blackColor]}];
     
-	NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+    // A button to push a ReaderViewController instance onto the current UINavigationBar stack.
+    // This is the typically and recommended way to use ReaderViewController with a navigation stack.
+    UIButton *standardPushViewControllerButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [standardPushViewControllerButton setTitle:@"Push ReaderViewController" forState:UIControlStateNormal];
+    [standardPushViewControllerButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [standardPushViewControllerButton addTarget:self action:@selector(pushStandardViewControllerButton:) forControlEvents:UIControlEventTouchUpInside];
+    [standardPushViewControllerButton setFrame:CGRectMake(0.0f, 200.0f, self.view.frame.size.width, 50.0f)];
+    [self.view addSubview:standardPushViewControllerButton];
 
-	NSString *name = [infoDictionary objectForKey:@"CFBundleName"];
+    // A button to push a ReaderFileViewController instnace onto the current navigation stack.
+    // This class has a ReaderViewController property in it, which is then added as a subview to
+    // the ReaderFileViewController's view.
+    UIButton *subviewPushViewControllerButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [subviewPushViewControllerButton setTitle:@"Push ReaderFileViewController" forState:UIControlStateNormal];
+    [subviewPushViewControllerButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [subviewPushViewControllerButton addTarget:self action:@selector(pushSubviewViewControllerButton:) forControlEvents:UIControlEventTouchUpInside];
+    [subviewPushViewControllerButton setFrame:CGRectMake(0.0f, 260.0f, self.view.frame.size.width, 50.0f)];
+    [self.view addSubview:subviewPushViewControllerButton];
 
-	NSString *version = [infoDictionary objectForKey:@"CFBundleVersion"];
-
-	self.title = [NSString stringWithFormat:@"%@ v%@", name, version];
-
-	CGSize viewSize = self.view.bounds.size;
-
-	CGRect labelRect = CGRectMake(0.0f, 0.0f, 80.0f, 32.0f);
-
-	UILabel *tapLabel = [[UILabel alloc] initWithFrame:labelRect];
-
-	tapLabel.text = @"Tap";
-	tapLabel.textColor = [UIColor whiteColor];
-	tapLabel.textAlignment = NSTextAlignmentCenter;
-	tapLabel.backgroundColor = [UIColor clearColor];
-	tapLabel.font = [UIFont systemFontOfSize:24.0f];
-	tapLabel.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
-	tapLabel.autoresizingMask |= UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-	tapLabel.center = CGPointMake(viewSize.width / 2.0f, viewSize.height / 2.0f);
-
-	[self.view addSubview:tapLabel]; 
-
-	UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-
-	[self.view addGestureRecognizer:singleTap];
 }
 
 - (void)viewDidUnload
 {
-#ifdef DEBUG
-	NSLog(@"%s", __FUNCTION__);
-#endif
-
 	[super viewDidUnload];
 }
 
@@ -116,43 +88,54 @@
 
 - (void)didReceiveMemoryWarning
 {
-#ifdef DEBUG
-	NSLog(@"%s", __FUNCTION__);
-#endif
-
 	[super didReceiveMemoryWarning];
 }
 
 #pragma mark UIGestureRecognizer methods
 
-- (void)handleSingleTap:(UITapGestureRecognizer *)recognizer
-{
-	NSString *phrase = nil; // Document password (for unlocking most encrypted PDF files)
+- (void)pushStandardViewControllerButton:(id)sender {
+    NSString *phrase = nil; // Document password (for unlocking most encrypted PDF files)
     
-	NSString *filePath = [[NSBundle mainBundle] pathForResource:@"hackermonthly-issue2" ofType:@"pdf"];
-
-	ReaderDocument *document = [ReaderDocument withDocumentFilePath:filePath password:phrase];
-
-	if (document != nil) // Must have a valid ReaderDocument object in order to proceed with things
-	{
-		ReaderViewController *readerViewController = [[ReaderViewController alloc] initWithReaderDocument:document];
-
-		readerViewController.delegate = self; // Set the ReaderViewController delegate to self
-
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"hackermonthly-issue2" ofType:@"pdf"];
+    
+    ReaderDocument *document = [ReaderDocument withDocumentFilePath:filePath password:phrase];
+    
+    if (document != nil) // Must have a valid ReaderDocument object in order to proceed with things
+    {
+        ReaderViewController *readerViewController = [[ReaderViewController alloc] initWithReaderDocument:document];
+        
+        readerViewController.delegate = self; // Set the ReaderViewController delegate to self
+        
 #if (DEMO_VIEW_CONTROLLER_PUSH == TRUE)
-
-		[self.navigationController pushViewController:readerViewController animated:YES];
-
+        
+        [self.navigationController pushViewController:readerViewController animated:YES];
+        
 #else // present in a modal view controller
-
-		readerViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+        
+        readerViewController.modalPresentationStyle = UIModalPresentationFullScreen;
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:readerViewController];
+        [navigationController.navigationBar setBarTintColor:[UIColor whiteColor]];
         
-		[self presentViewController:navigationController animated:YES completion:NULL];
-
+        [self presentViewController:navigationController animated:YES completion:NULL];
+        
 #endif // DEMO_VIEW_CONTROLLER_PUSH
-	}
+    }
+}
+
+- (void)pushSubviewViewControllerButton:(id)sender {
+    ReaderFileViewController *fileViewController = [[ReaderFileViewController alloc] init];
+    
+#if (DEMO_VIEW_CONTROLLER_PUSH == TRUE)
+    [self.navigationController pushViewController:fileViewController animated:YES];
+#else
+    fileViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+    
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:fileViewController];
+    
+    [self presentViewController:navigationController animated:YES completion:NULL];
+
+#endif
 }
 
 #pragma mark ReaderViewControllerDelegate methods
