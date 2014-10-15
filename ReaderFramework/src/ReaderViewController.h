@@ -52,6 +52,7 @@
 //
 
 @property (strong, nonatomic, readwrite) UINavigationItem *remoteNavigationItem;
+@property (strong, nonatomic, readwrite) UINavigationController *remoteNavigationController;
 
 @property (nonatomic, weak, readwrite) id <ReaderViewControllerDelegate> delegate;
 
