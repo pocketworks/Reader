@@ -28,7 +28,7 @@ Here's how it looks now:
 Cocoapods of course!
 
 ```
-pod 'ReaderFramework', '~> 1.1.3'
+pod 'ReaderFramework', '~> 1.1.4'
 ```
 
 ### Usage
