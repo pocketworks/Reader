@@ -43,6 +43,8 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 
 @interface ReaderViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate, UIActionSheetDelegate, MFMailComposeViewControllerDelegate,
 									ReaderMainPagebarDelegate, ReaderContentViewDelegate, ThumbsViewControllerDelegate>
+
+@property (strong, nonatomic, readwrite) MFMailComposeViewController *mailComposer;
 @end
 
 @implementation ReaderViewController
@@ -893,18 +895,18 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
         
 		if (attachment != nil) // Ensure that we have valid document file attachment data
 		{
-			MFMailComposeViewController *mailComposer = [MFMailComposeViewController new];
+            _mailComposer = [MFMailComposeViewController new];
             
-			[mailComposer addAttachmentData:attachment mimeType:@"application/pdf" fileName:fileName];
+			[_mailComposer addAttachmentData:attachment mimeType:@"application/pdf" fileName:fileName];
             
-			[mailComposer setSubject:fileName]; // Use the document file name for the subject
+			[_mailComposer setSubject:fileName]; // Use the document file name for the subject
             
-			mailComposer.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-			mailComposer.modalPresentationStyle = UIModalPresentationFormSheet;
+			_mailComposer.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+			_mailComposer.modalPresentationStyle = UIModalPresentationFormSheet;
             
-			mailComposer.mailComposeDelegate = self; // Set the delegate
+			_mailComposer.mailComposeDelegate = self; // Set the delegate
             
-			[self presentViewController:mailComposer animated:YES completion:NULL];
+			[self presentViewController:_mailComposer animated:YES completion:NULL];
 		}
 	}
 }
@@ -941,7 +943,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 }
 
 -(void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
-    [controller dismissViewControllerAnimated:YES completion:nil];
+    [controller dismissViewControllerAnimated:YES completion:NULL];
 }
 
 #pragma mark ThumbsViewControllerDelegate methods
