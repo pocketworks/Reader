@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
                    DESC
 
   s.homepage     = "https://github.com/KiranPanesar/Reader"
-  s.license      = { :type => 'MIT', :file => 'LICENSE' }
+  s.license      = { :type => 'MIT', :file => 'LICENSE.md' }
   s.author             = { "Kiran Panesar" => "KiranSinghPanesar@googlemail.com" }
   s.social_media_url = "http://twitter.com/k_panesar"
 
