@@ -43,12 +43,13 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 
 @interface ReaderViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate, UIActionSheetDelegate, MFMailComposeViewControllerDelegate,
 									ReaderMainPagebarDelegate, ReaderContentViewDelegate, ThumbsViewControllerDelegate>
+
+@property (strong, nonatomic, readwrite) MFMailComposeViewController *mailComposer;
 @end
 
 @implementation ReaderViewController
 {
 	UIScrollView *theScrollView;
-
     UIBarButtonItem *doneBarButtonItem;
     UIBarButtonItem *thumbsBarButton;
     UIBarButtonItem *moreBarButtonItem;
@@ -84,6 +85,24 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 #pragma mark Properties
 
 @synthesize delegate;
+
+#pragma Navigation getters
+
+- (UINavigationController *)remoteNavigationController {
+    if (_remoteNavigationController) {
+        return _remoteNavigationController;
+    } else {
+        return self.navigationController;
+    }
+}
+
+- (UINavigationItem *)remoteNavigationItem {
+    if (_remoteNavigationItem) {
+        return _remoteNavigationItem;
+    } else {
+        return self.navigationItem;
+    }
+}
 
 #pragma mark Support methods
 
@@ -183,7 +202,8 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 
 				[theScrollView addSubview:contentView]; [contentViews setObject:contentView forKey:key];
 
-				contentView.message = self; [newPageSet addIndex:number];
+                contentView.message = self;
+                [newPageSet addIndex:number];
 			}
 			else // Reposition the existing content view
 			{
@@ -368,7 +388,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
         doneBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                                                                           target:self
                                                                           action:@selector(pushDoneBarButtonItem:)];
-        [self.navigationItem setLeftBarButtonItem:doneBarButtonItem];
+        [self.remoteNavigationItem setLeftBarButtonItem:doneBarButtonItem];
         
     }
     
@@ -382,8 +402,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
                                                                       target:self
                                                                       action:@selector(pushActionBarButtonItem:)];
     
-    [self.navigationItem setRightBarButtonItems:@[moreBarButtonItem, thumbsBarButton]];
-
+    [self.remoteNavigationItem setRightBarButtonItems:@[moreBarButtonItem, thumbsBarButton]];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -686,9 +705,9 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 			{
 				if ([lastHideTime timeIntervalSinceNow] < -0.75) // Delay since hide
 				{
-					if (([self.navigationController isNavigationBarHidden] == YES) || (mainPagebar.hidden == YES))
+					if (([self.remoteNavigationController isNavigationBarHidden] == YES) || (mainPagebar.hidden == YES))
 					{
-						[self.navigationController setNavigationBarHidden:NO animation:ReaderNavigationBarAnimationFade];
+						[self.remoteNavigationController setNavigationBarHidden:NO animation:ReaderNavigationBarAnimationFade];
                         [mainPagebar showPagebar]; // Show
 					}
 				}
@@ -771,7 +790,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 
 -(BOOL)isPresentedModally {
     return self.presentingViewController.presentedViewController == self
-    || self.navigationController.presentingViewController.presentedViewController == self.navigationController
+    || self.remoteNavigationController.presentingViewController.presentedViewController == self.remoteNavigationController
     || [self.tabBarController.presentingViewController isKindOfClass:[UITabBarController class]];
 }
 
@@ -779,7 +798,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 
 - (void)contentView:(ReaderContentView *)contentView touchesBegan:(NSSet *)touches
 {
-	if (([self.navigationController isNavigationBarHidden] == NO) || (mainPagebar.hidden == NO))
+	if (([self.remoteNavigationController isNavigationBarHidden] == NO) || (mainPagebar.hidden == NO))
 	{
 		if (touches.count == 1) // Single touches only
 		{
@@ -792,7 +811,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 			if (CGRectContainsPoint(areaRect, point) == false) return;
 		}
 
-		[self.navigationController setNavigationBarHidden:YES animation:ReaderNavigationBarAnimationFade];
+		[self.remoteNavigationController setNavigationBarHidden:YES animation:ReaderNavigationBarAnimationFade];
         [mainPagebar hidePagebar]; // Hide
 
 		lastHideTime = [NSDate date];
@@ -802,7 +821,9 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 #pragma mark Toolbar button actions
 
 -(void)pushDoneBarButtonItem:(id)sender {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(dismissReaderViewController:)]) {
+        [self.delegate dismissReaderViewController:self];
+    }
 }
 
 -(void)pushActionBarButtonItem:(id)sender {
@@ -874,18 +895,18 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
         
 		if (attachment != nil) // Ensure that we have valid document file attachment data
 		{
-			MFMailComposeViewController *mailComposer = [MFMailComposeViewController new];
+            _mailComposer = [MFMailComposeViewController new];
             
-			[mailComposer addAttachmentData:attachment mimeType:@"application/pdf" fileName:fileName];
+			[_mailComposer addAttachmentData:attachment mimeType:@"application/pdf" fileName:fileName];
             
-			[mailComposer setSubject:fileName]; // Use the document file name for the subject
+			[_mailComposer setSubject:fileName]; // Use the document file name for the subject
             
-			mailComposer.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-			mailComposer.modalPresentationStyle = UIModalPresentationFormSheet;
+			_mailComposer.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+			_mailComposer.modalPresentationStyle = UIModalPresentationFormSheet;
             
-			mailComposer.mailComposeDelegate = self; // Set the delegate
+			_mailComposer.mailComposeDelegate = self; // Set the delegate
             
-			[self presentViewController:mailComposer animated:YES completion:NULL];
+			[self presentViewController:_mailComposer animated:YES completion:NULL];
 		}
 	}
 }
@@ -922,7 +943,7 @@ NSString * const  ReaderActionSheetItemTitleUnbookmark = @"Unbookmark";
 }
 
 -(void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
-    [controller dismissViewControllerAnimated:YES completion:nil];
+    [controller dismissViewControllerAnimated:YES completion:NULL];
 }
 
 #pragma mark ThumbsViewControllerDelegate methods

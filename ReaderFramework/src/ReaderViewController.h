@@ -42,6 +42,18 @@
 @property (strong, nonatomic, readwrite) ReaderDocument *document;
 @property (assign, nonatomic, readwrite) NSInteger currentPage;
 
+//
+// A UINavigationItem property to allow the PDF View Controller to set its nav
+// bar elements in a UINavigationItem other than its own default.
+//
+// This is useful when you're implementing the PDF View Controller as a subview
+// of another VC's view in a UINavigationController, so the PDF View Controller will
+// automatically add its bar button items to the UINavigationController's nav bar.
+//
+
+@property (strong, nonatomic, readwrite) UINavigationItem *remoteNavigationItem;
+@property (strong, nonatomic, readwrite) UINavigationController *remoteNavigationController;
+
 @property (nonatomic, weak, readwrite) id <ReaderViewControllerDelegate> delegate;
 
 - (id)initWithReaderDocument:(ReaderDocument *)object;
