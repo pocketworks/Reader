@@ -49,6 +49,7 @@
 		9F370108192E0672003391C5 /* UINavigationController+NavBarAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F3700F2192E0672003391C5 /* UINavigationController+NavBarAnimation.m */; };
 		9F370109192E0672003391C5 /* UIXToolbarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F3700F4192E0672003391C5 /* UIXToolbarView.m */; };
 		9F37010A192E0672003391C5 /* ThumbsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F3700F6192E0672003391C5 /* ThumbsViewController.m */; };
+		9F4B168C19EEEEDC001FA3C3 /* ReaderFileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F4B168B19EEEEDC001FA3C3 /* ReaderFileViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -120,6 +121,8 @@
 		9F3700F4192E0672003391C5 /* UIXToolbarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIXToolbarView.m; sourceTree = "<group>"; };
 		9F3700F5192E0672003391C5 /* ThumbsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThumbsViewController.h; sourceTree = "<group>"; };
 		9F3700F6192E0672003391C5 /* ThumbsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThumbsViewController.m; sourceTree = "<group>"; };
+		9F4B168A19EEEEDC001FA3C3 /* ReaderFileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReaderFileViewController.h; sourceTree = "<group>"; };
+		9F4B168B19EEEEDC001FA3C3 /* ReaderFileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReaderFileViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -146,6 +149,8 @@
 				45AB72E8141FC0A2003524C3 /* ReaderAppDelegate.m */,
 				45AB72E9141FC0A2003524C3 /* ReaderDemoController.h */,
 				45AB72EA141FC0A2003524C3 /* ReaderDemoController.m */,
+				9F4B168A19EEEEDC001FA3C3 /* ReaderFileViewController.h */,
+				9F4B168B19EEEEDC001FA3C3 /* ReaderFileViewController.m */,
 				4555C74A14211A00005F448D /* ReaderBookDelegate.h */,
 				4555C74B14211A00005F448D /* ReaderBookDelegate.m */,
 			);
@@ -392,6 +397,7 @@
 				45AB72EC141FC0A2003524C3 /* ReaderDemoController.m in Sources */,
 				4555C74C14211A00005F448D /* ReaderBookDelegate.m in Sources */,
 				9F3700FB192E0672003391C5 /* ReaderContentView.m in Sources */,
+				9F4B168C19EEEEDC001FA3C3 /* ReaderFileViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
