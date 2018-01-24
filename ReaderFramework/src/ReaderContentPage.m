@@ -457,6 +457,17 @@
 				CGRect mediaBoxRect = CGPDFPageGetBoxRect(_PDFPageRef, kCGPDFMediaBox);
 				CGRect effectiveRect = CGRectIntersection(cropBoxRect, mediaBoxRect);
 
+				float scaleRatio = 610 / effectiveRect.size.width;
+
+				if (scaleRatio < 1) {	// iPhone 5 scrolling bug, clamp rect to 610 wide
+					effectiveRect = CGRectMake(effectiveRect.origin.x * scaleRatio, effectiveRect.origin.y * scaleRatio, 610, effectiveRect.size.height * scaleRatio);
+				}
+
+				if (effectiveRect.size.height > 790) {	// iPhone 5 scrolling bug, clamp rect to 790 high
+					scaleRatio = 790 / effectiveRect.size.height;
+					effectiveRect = CGRectMake(effectiveRect.origin.x * scaleRatio, effectiveRect.origin.y * scaleRatio, effectiveRect.size.width * scaleRatio, 790);
+				}
+
 				_pageAngle = CGPDFPageGetRotationAngle(_PDFPageRef); // Angle
 
 				switch (_pageAngle) // Page rotation angle (in degrees)
@@ -483,8 +494,6 @@
 
 				NSInteger page_w = _pageWidth; // Integer width
 				NSInteger page_h = _pageHeight; // Integer height
-
-				if (page_w % 2) page_w--; if (page_h % 2) page_h--; // Even
 
 				viewRect.size = CGSizeMake(page_w, page_h); // View size
 			}
