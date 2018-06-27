@@ -369,7 +369,7 @@
 
 		NSInteger offsetY = newContentOffset.y; // Requested content offset Y
 
-		if (offsetY < minY) offsetY = minY; else if (offsetY > maxY) offsetY = maxY;
+		if (offsetY > maxY) offsetY = maxY;
 
 		newContentOffset.y = offsetY; newContentOffset.x = 0.0f; // Validated
 	}
