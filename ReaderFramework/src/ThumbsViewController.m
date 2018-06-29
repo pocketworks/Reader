@@ -121,8 +121,7 @@
                  ];
                 
 				// Reset to negative lots to force minimum
-				markedOffset = CGPointZero;
-				markedOffset.y = -1000;
+				markedOffset = CGPointMake(0.0, -1000.0);
 				updateBookmarked = NO;
 			}
             
