@@ -120,7 +120,10 @@
                  }
                  ];
                 
-				markedOffset = CGPointZero; updateBookmarked = NO; // Reset
+				// Reset to negative lots to force minimum
+				markedOffset = CGPointZero;
+				markedOffset.y = -1000
+				updateBookmarked = NO;
 			}
             
 			[theThumbsView reloadThumbsContentOffset:markedOffset];
