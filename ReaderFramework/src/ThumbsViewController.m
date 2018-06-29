@@ -120,6 +120,8 @@
                  }
                  ];
                 
+				// Reset to negative lots to force minimum
+				markedOffset = CGPointMake(0.0f, -64.0f);
 				updateBookmarked = NO;
 			}
             
